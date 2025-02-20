@@ -9,7 +9,7 @@
 
 [![vscode-logo]][vscode-site] [![selenium-logo]][selenium-site] [![python-logo]][python-site] [![behave-logo]][behave-site]
 
-<h1 align="center">🧪Testing Automation: 🐍Selenium 4.5 +Behave</h1>
+<h1 align="center">🧪 Testing Automation: 🐍 Selenium 4.5 + Behave</h1>
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -17,219 +17,98 @@
     <img src="https://user-images.githubusercontent.com/91127281/200486232-5697197c-0541-4496-a487-bc720f234a1b.png" alt="Logo" width="" height="270">
   </a>
 
-<h2 align="center">🧪SELENIUM-PYTHON🧪</h2>
+<h2 align="center">🧪 SELENIUM-PYTHON 🧪</h2>
 
   <p align="center">
-    Selenium + Pytest + Behave (Gherkin) in VSCode
+    Selenium + Pytest + Behave (Gherkin) en VSCode
     <br />
-    <a href="https://github.com/upex-galaxy/selenium-python"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Emanuelrestrepo22/selenium-python"><strong>Explora la documentación »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/upex-galaxy/selenium-python/blob/selpex/Tests/start/upexTest.py">View Demo</a>
+    <a href="https://github.com/Emanuelrestrepo22/selenium-python/blob/main/Tests/start/test_demo.py">Ver Demo</a>
   </p>
 </div>
 
-<!-- ABOUT THE PROJECT -->
+---
 
-# Pruebas Automatizadas con Python🐍
+# 🌟 Sobre este Proyecto
 
-¡Python es un lenguaje de programación que no necesita presentación! Es uno de los lenguajes preferidos cuando se trata de proyectos que involucran aprendizaje automático (ML) , inteligencia artificial (IA) y más. En un campo de batalla diferente, la combinación de Selenium Python es ampliamente preferida en lo que respecta a la automatización de sitios web.
+Hola, soy **Emanuel Restrepo**, un apasionado del testing y la automatización de pruebas con **Selenium y Python**. Creé este proyecto como una forma de demostrar mis habilidades en **QA Automation**, mejorar continuamente y compartir conocimiento con la comunidad. Si eres **reclutador, equipo de trabajo o entusiasta de la automatización**, aquí encontrarás una implementación robusta y escalable de pruebas automatizadas.
 
-Según la Encuesta de desarrolladores de Stack Overflow 2021, Python es el tercer lenguaje más popular después de JavaScript y HTML/CSS. La destreza de Selenium y Python ayuda a automatizar las interacciones con WebElements en el DOM (Document Object Model).
+Este repositorio combina **Selenium, Pytest y Behave (Gherkin)**, siguiendo buenas prácticas y estándares de la industria para automatizar la interacción con aplicaciones web. Es ideal para aquellos que buscan aprender sobre **automatización de pruebas con Selenium y POM (Page Object Model)**.
 
-# CÓMO EMPEZAR DIRECTO AL GRANO:
-
-1. **Precondición**:
-
-   - Tener instalado Anaconda en la PC local (Es un Manager de Ambiente Virtual).
-   - Puedes confirmar abriendo "Anaconda Prompt" y ejecutar `conda --version`
-   - Setear la Variable de Ambiente en Windows con el mismo path de anaconda, normalmente sería: `C:\Users\Username\anaconda3` para poder usar Anaconda en las terminales.
-
-2. **Clona el Proyecto con la Terminal de VSC**:
-
-   ```
-   git clone https://github.com/upex-galaxy/L1-selpy-demo.git
-   ```
-
-3. `Opción VSCODE:` **Abrir el Command Palette (Ctrl+Shift+P) y realizar las acciones:**
-
-   - Seleccionar Python: Create Environment
-   - Seleccionar Conda
-   - Seleccionar versión de Python (la que recomiende)
-   - Esperar que realice el proceso de creación de environment.
-   - Debería crearse un archivo `.conda` en el root del repo.
-   - Para ver el listado en envs creados con `conda info --envs`
-   - Copia el env creado full path.
-   - Activar el environment con `conda activate <full_path_env>`
-
-4. `Opción Manual (Cómoda):` **Entra en la Carpeta del Proyecto clonado `selenium-python` en VSC y Crea un Ambiente de Conda con la Terminal**:
-
-   ```
-   conda create -n <env_name>
-   ```
-
-   - **EN WINDOWS: Activa el Ambiente Conda creado a través de**:
-
-   ```
-   source activate <env_name>
-   ```
-
-   - **EN LINUX: Activa el Ambiente Conda creado a través de**:
-
-   ```
-   activate <env_name>
-   ```
-
-5. **MUY IMPORTANTE: ACTIVAR EL INTÉRPRETE PYTHON** Por más que se hayan instalado las dependencias, es importante activar ahora el intérprete para poder trabajar sobre el mismo. Para ello:
-
-   - Abrir el Command Palette (Ctrl+Shift+P)
-   - Seleccionar la opción: "Python: select interpreter"
-   - Seleccionar la ruta python que el ENV activado para el proyecto.
-   - Refrescar VSCODE para efectuar todas las configuraciones.
-
-6. **Instala todas las dependencias del archivo requirements.txt con el ENV creado de Conda, ejecutando el siguiente comando luego haber activado el ambiente conda y el intérprete de Python**:
-   ```
-   pip install -r requirements.txt
-   ```
-   - Aquí se está usando con el mismo pip se instala las dependencias del proyecto actual ubicado. Esto instalará todas las dependencias del Proyecto en el ENV creado para comenzar a trabajar directo.
-   - Si estás usando la Opción VSCODE, el cual usa una ruta directa, debes usar esta misma ruta y adentrarte en el archivo python.exe para ejecutar el mismo comando.
-
-# PLAN DE PRUEBA: ESTRATEGIA Y DISEÑO
-
-### 🚩NORMATIVAS A SEGUIR:
-
-1. Perfecta Nomenclatura del nombre de Archivo de prueba: <br> `test_{GXID}_{StoryShortName}.py ej: test_GX50_AgregarItemsAlCart.py`
-2. El Archivo de Prueba dentro estar en el directorio "coverage" con la carpeta del Componente correspondiente, ejemplo: <br> `tests/coverage/example/test_example.py`.
-3. Buen diseño del Test Suite elaborado (Esto implica que se vean bien el código en general, que al menos funcione).
-4. NO usar fixture como PageObjectModel sino como Data (es decir, no agarrar elementos Web por fixtures, sino usar el Fixture para iterar Data o reutilizar variables).
-   - Previamente en GX, se usaba el patrón Fixture como POM, porque era fácil de aprender, pero hoy en día las entrevistas técnicas piden PageObject Model de la manera tradicional, sin usar Commands.
-5. Los "Cypress Commands" no es un uso obligatorio; pero si se quiere usar, debería aplicarse para hacer funciones de algoritmos para múltiples suites o para generar precondiciones repetitivas (Background).
-
-6. **En caso de usar el Utils u otros módulos**: Ya los tienes todo disponible en el archivo principal Testbase que puedes importar desde tu archivo, usando: <br> `from tests.testbase import *`.
-7. **En caso de usar PageObjectModel**: Aplicar las buenas prácticas del patrón de diseño POM. Recuerda usar el tipo de función lambda para generar los locators y crear buenos nombres de los métodos.
-8. **En caso de usar el CI Pipeline**: Usar únicamente el archivo predeterminado del proyecto `sanity.yml`, y asegurarse de modificarlo correctamente (Solo cambiar el Path del Test Suite) y no borrar o cambiar nada más, que funcione y pase los Checks. El archivo `regression.yml` se ejecutará automaticamente cuando los cambios hayan mergeado a QA.
-9. **En caso de usar Behave (BDD)**: Chequear que el archivo Gherkin (.feature) y los StepDefinitions (.py) estén correctamente diseñados. Lee las guías o el curso para más información de su uso.
+📌 **¿Por qué este proyecto?**
+- Para demostrar habilidades en **QA Automation**.
+- Para construir un framework de pruebas reutilizable y escalable.
+- Para ayudar a otros testers y desarrolladores a iniciarse en la automatización.
+- Para mostrar mi crecimiento y experiencia en el campo del testing.
 
 ---
 
-# 🚩NIVELES DE TESTER QA en UPEX Galaxy:
+## 🚀 Cómo Empezar
 
-El programa **UPEX Galaxy** está diseñado para guiar a los Testers a través de 2 Etapas (Career Paths). Cada Etapa conlleva ciertos **NIVELES** que el Tester debe alcanzar para llegar a su mayor **SENIORITY**:
+### **1️⃣ Pre-requisitos**
+- Tener instalado **Anaconda** en la PC.
+- Confirmar su instalación ejecutando:
+  ```sh
+  conda --version
+  ```
+- Configurar la variable de entorno en Windows: `C:\Users\Username\anaconda3`.
 
-## QA Engineer (Pruebas Manuales)
+### **2️⃣ Clonar el Proyecto**
+```sh
+git clone https://github.com/Emanuelrestrepo22/selenium-python.git
+```
 
-Capacidad de realizar análisis, planificación, ejecución y gestión de:
+### **3️⃣ Configurar el Entorno en VS Code**
+1. Abrir **Command Palette** en VSCode (`Ctrl+Shift+P`).
+2. Seleccionar `Python: Create Environment`.
+3. Elegir `Conda` y la versión recomendada de Python.
+4. Esperar a que se cree el entorno `.conda`.
+5. Para activar el entorno:
+   ```sh
+   conda activate <full_path_env>
+   ```
 
-- Pruebas Manuales de UI
-- Bases de Datos
-- API Testing
+### **4️⃣ Instalar Dependencias**
+```sh
+pip install -r requirements.txt
+```
 
-### 🧪L1
-
-Capaz de realizar tareas (US) sencillas de frontend sin mucha complejidad.
-
-##### Prácticas:
-
-- Entiende y puede seguir guías y protocolos de prueba previamente definidos.
-- Identifica errores obvios en la interfaz y reporta con claridad.
-- Familiarizado con herramientas básicas de testing y reporting.
-- Capaz de realizar pruebas de regresión siguiendo casos de prueba definidos.
-
-### 🧪L2
-
-Capaz de realizar tareas (US) avanzadas de frontend y también tareas de Backend (Pruebas de Bases de Datos y Pruebas de API).
-
-##### Prácticas:
-
-- Realiza pruebas exploratorias identificando puntos críticos en las aplicaciones.
-- Puede diseñar casos de prueba simples basados en requisitos.
-- Familiarizado con SQL básico para realizar pruebas en Bases de Datos.
-- Inicia pruebas básicas en APIs usando herramientas como Postman o similares.
-- Entiende la importancia de ciclos de vida de defectos y los gestiona correctamente.
-
-### 🧪L3
-
-Capaz de realizar tareas (US) de performance y/o diseñar nuevas Historias de Usuario.
-
-##### Prácticas:
-
-- Diseña y ajusta casos de prueba complejos basados en cambios de requisitos.
-- Identifica y reporta problemas de rendimiento usando herramientas básicas.
-- Realiza pruebas exploratorias avanzadas e identifica áreas no cubiertas.
-- Gestiona los Planes de Prueba (Cobertura, Regresión, Sanity, Smoke) de manera efectiva.
-- Ofrece guía y mentoría a testers de niveles inferiores (Capacidad de ser Tutor).
-- Tiene una comprensión básica sobre automatización de pruebas.
-
-## QA Automation Engineer (Pruebas Automatizadas)
-
-Capacidad de realizar análisis, planificación, ejecución y gestión de:
-
-- Pruebas Automatizadas de E2E
-- Integration Testing (Aplicando para cualquiera de los Frameworks de automatización de Browsers/Apps)
-
-### 🧪L3
-
-Capaz de realizar tareas (TechDept) para Automatizar pruebas UI de historias implementadas.
-
-##### Prácticas:
-
-- Capaz de manejar el flujo completo de trabajo ordinario.
-- Capaz de realizar pruebas Frontend con data sin iteración (hardcodeada).
-- Capaz de realizar Page-Object-Model básico.
-- Capaz de realizar controles de versionado de código (conocimiento básico en GIT).
-
-### 🧪L4
-
-Capaz de realizar tareas (TD) para Automatizar pruebas complejas y de integración de historias implementadas.
-
-##### Prácticas:
-
-- Capacidad de resolución de problemas y conflictos de pruebas (Debugging).
-- Capaz de realizar pruebas E2E con data en iteración (Parametrizadas).
-- Capaz de escribir código con Excelentes prácticas y principios (POM, “DRY”, etc.).
-- Capaz de escribir scripts de prueba con Estructura de Datos, condicionales, bucles, etc.
-- Capaz de entender y ejecutar Pipelines de Regresión en Continuous Integration (CI).
-- Capaz de escribir scripts de prueba para intercepción y assertions de API Testing.
-
-### 🧪L5
-
-Capaz de realizar cualquier tarea (TD) de Automatización y gestionar los Planes de Prueba.
-
-##### Prácticas:
-
-- Capacidad de resolución de conflictos de GIT con facilidad.
-- Capacidad de resolución de problemas de ambientes y errores de config del Repo.
-- Capaz de realizar Planes de Prueba generales y para Automatización de pruebas.
-- Capaz de planificar, armar y hacer funcionar los Repositorios de Automatización de Prueba.
-- Capaz de configurar integraciones de aplicaciones de Reporte de Prueba con el Repo.
-- Capaz de realizar pruebas automatizadas de Performance (con ciertas herramientas).
+### **5️⃣ Ejecutar Pruebas**
+Para correr los tests automatizados:
+```sh
+pytest -v --html=report.html --self-contained-html
+```
 
 ---
 
-### 🧙🏻‍♂️APRENDE Y GANA EXPERIENCIA COMO QA AUTOMATION EN UPEX GALAXY🚀
+## 🏗️ Estrategia de Pruebas y Diseño
 
-Suscríbete a un Sprint y trabaja como un QA Automation Engineer!
-
-### 🚩ENTRA EN [UPEXDOCU](https://linktree.com/upexjira) Y BUSCA LAS GUÍAS DE SELENIUM-PYTHON AL GRANO!
+### 🔹 **Buenas Prácticas y Normativas**
+1. **Nomenclatura correcta** para los archivos de prueba:
+   ```sh
+   test_{GXID}_{StoryShortName}.py  # Ejemplo: test_GX50_AgregarItemsAlCart.py
+   ```
+2. **Ubicación de los test suites** en el directorio correcto: `tests/coverage/`.
+3. **Evitar el uso de fixtures como Page Object Model (POM)**.
+4. **Uso de comandos Cypress** solo si se aplican correctamente.
+5. **Aplicación estricta del patrón de diseño POM**.
+6. **Uso correcto del CI Pipeline (sanity.yml y regression.yml)**.
+7. **Revisión del diseño de los archivos Gherkin y Step Definitions en Behave**.
 
 ---
 
-## CURSO YOUTUBE DE SELENIUM-PYTHON AL GRANO:
+## 📌 Conéctate conmigo
+Si te interesa mi trabajo o deseas colaborar, ¡contáctame!
 
-- [🛸CURSO: "AUTOMATION SELENIUM-PYTHON AL GRANO" (UPEX GALAXY)]()
+📩 **Correo:** emadavresgar@icloud.com  
+💼 **LinkedIn:** [linkedin.com/in/emanuelrestrepo](https://www.linkedin.com/in/emanuelrestrepo/)  
+🐍 **GitHub:** [github.com/Emanuelrestrepo22](https://github.com/Emanuelrestrepo22)  
+📸 **Instagram:** [@emanuelrestrepo](https://www.instagram.com/emanuelrestrepo/)  
+📸 **Instagram Personal:** [@_restrepoema](https://www.instagram.com/_restrepoema/)  
+💬 **Slack (Upex Galaxy):** [upexgalaxy.slack.com](https://upexgalaxy.slack.com/team/U055Q8W9N66)  
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+---
 
-[vscode-logo]: https://img.shields.io/badge/VSCode-black?logo=visualstudiocode&style=for-the-badge
-[vscode-site]: https://code.visualstudio.com/
-[selenium-logo]: https://img.shields.io/badge/Selenium-black?logo=selenium&style=for-the-badge
-[selenium-site]: https://www.selenium.dev/documentation/webdriver/
-[python-logo]: https://img.shields.io/badge/Python-black?logo=python&style=for-the-badge
-[python-site]: https://www.python.org/
-[behave-logo]: https://img.shields.io/badge/Behave-black?logo=cucumber&style=for-the-badge
-[behave-site]: https://behave.readthedocs.io/
-[slack-logo]: https://img.shields.io/badge/Slack-black?logo=slack&style=for-the-badge
-[slack-join]: https://linktr.ee/upex
-[linkedin-logo]: https://img.shields.io/badge/LinkedIn-black?style=for-the-badge&logo=linkedin
-[linkedin-link]: https://www.linkedin.com/in/elyermad/
+Si te gustó este proyecto, ⭐ ¡dale un star en GitHub! 🚀
