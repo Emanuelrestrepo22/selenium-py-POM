@@ -1,80 +1,58 @@
-from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-
-
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from typing import List
 class Locators:
-    # * Definición de funciones para interactuar con elementos de la página
+    """
+    Clase que encapsula métodos reutilizables para encontrar y manipular elementos web.
+    """
+
     def __init__(self, driver: WebDriver):
         self.web = driver
+        
+    def page(self, url: str):
+        self.web.get(url)
 
-    def page(self, link: str):
-        # Función para abrir una URL en el navegador web y maximizar la ventana
-        self.web.maximize_window()
-        self.web.get(link)
+    def byId(self, element_id: str) -> WebElement:
+        """Encuentra un elemento por su ID."""
+        return self.web.find_element(By.ID, element_id)
 
-    def byDataTest(self, data_test: str):
-        # Buscar elemento por data-test id
-        return self.web.find_element(By.CSS_SELECTOR, f"[data-test={data_test}]")
+    def byName(self, name: str) -> WebElement:
+        """Encuentra un elemento por su atributo 'name'."""
+        return self.web.find_element(By.NAME, name)
 
-    def byDataTests(self, data_test: str):
-        # Buscar elemento por data-test ids
-        return self.web.find_elements(By.CSS_SELECTOR, f"[data-test={data_test}]")
+    def byCss(self, selector: str) -> WebElement:
+        """Encuentra un elemento por selector CSS."""
+        return self.web.find_element(By.CSS_SELECTOR, selector)
 
-    def bySelector(self, element: str):
-        # Buscar elemento por selector CSS
-        return self.web.find_element(By.CSS_SELECTOR, element)
+    def byXpath(self, xpath: str) -> WebElement:
+        """Encuentra un elemento por XPATH."""
+        return self.web.find_element(By.XPATH, xpath)
 
-    def bySelectors(self, element: str):
-        # Buscar elemento por selector CSS
-        return self.web.find_elements(By.CSS_SELECTOR, element)
+    def byDataTest(self, value: str) -> WebElement:
+        """Encuentra un elemento usando el atributo 'data-test' (muy común en testing)."""
+        return self.web.find_element(By.CSS_SELECTOR, f'[data-test="{value}"]')
+    def byClasses(self, class_name: str) -> List[WebElement]:
+        """Encuentra una lista de elementos por clase CSS."""
+        return self.web.find_elements(By.CLASS_NAME, class_name)
 
-    def byTag(self, element: str):
-        # Buscar elemento por nombre de etiqueta
-        return self.web.find_element(By.TAG_NAME, element)
+    def waitUntilVisible(self, locator: str, timeout=10) -> WebElement:
+        """
+        Espera hasta que el elemento esté visible antes de interactuar con él.
+        """
+        return WebDriverWait(self.web, timeout).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, locator))
+        )
 
-    def byTags(self, element: str):
-        # Buscar elemento por nombre de etiqueta
-        return self.web.find_elements(By.TAG_NAME, element)
+    def pressEnter(self, element: WebElement):
+        """Envía la tecla Enter a un elemento."""
+        element.send_keys(Keys.ENTER)
 
-    def byID(self, element: str):
-        # Buscar elemento por ID
-        return self.web.find_element(By.ID, element)
-
-    def byIDs(self, element: str):
-        # Buscar elemento por ID
-        return self.web.find_elements(By.ID, element)
-
-    def byClass(self, element: str):
-        # Buscar elemento por nombre de clase
-        return self.web.find_element(By.CLASS_NAME, element)
-
-    def byClasses(self, element: str):
-        # Buscar elemento por nombre de clase
-        return self.web.find_elements(By.CLASS_NAME, element)
-
-    def byName(self, element: str):
-        # Buscar elemento por nombre
-        return self.web.find_element(By.NAME, element)
-
-    def byNames(self, element: str):
-        # Buscar elemento por nombre
-        return self.web.find_elements(By.NAME, element)
-
-    def byXpath(self, element: str):
-        # Buscar elemento por XPath
-        return self.web.find_element(By.XPATH, element)
-
-    def byXpaths(self, element: str):
-        # Buscar elemento por XPath
-        return self.web.find_elements(By.XPATH, element)
-
-    # * ---- Smart Locators
-
-    def contains(self, text: str):
-        # Buscar element por dado innerText como contenedor (no estricto)
-        return self.web.find_elements(By.XPATH, f'//*[contains(text(),"{text}")]')
-
-    def withinElement_get(self, parentElement: WebElement, childElement: str):
-        # Buscar un element específico dentro de un elemento padre
-        return parentElement.find_element(By.CSS_SELECTOR, childElement)
+    def clickElement(self, element: WebElement):
+        """Hace clic en un elemento usando ActionChains (por si hay problemas de visibilidad)."""
+        ActionChains(self.web).move_to_element(element).click().perform()

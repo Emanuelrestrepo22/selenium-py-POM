@@ -1,14 +1,14 @@
 import pytest
-# * Aquí se importa todos los artilugios generado de nuestro archivo de drivers!
-# * Primero, se importa siempre "pytest" librería de Python para realizar pruebas (the best!)
-# * A continuación, verás que los imports de nuestros archivos deben comenzar siempre desde el root directory "tests"
-# * En el archivo testbase en especial, se alojan todos  los TestUtils para nuestras pruebas.
 from selenium.webdriver.remote.webdriver import WebDriver
+from typing import Tuple, Dict  # ✅ Corrección de import
+
 from tests.testbase import *
 from tests.utils.asserts import Expect
 from tests.utils.drivers import Drivers
 from tests.utils.locators import Locators
+from tests.pages.login_page import LoginPage  # ✅ Importar LoginPage
 
+Test = Tuple[WebDriver, Locators]  # ✅ Definir Test correctamente
 
 def pytest_addoption(parser: pytest.Parser):
     parser.addoption(
@@ -22,22 +22,18 @@ def pytest_addoption(parser: pytest.Parser):
         choices=("true", "false"),
     )
 
-
 @pytest.fixture
 def browser(request: pytest.FixtureRequest):
     return request.config.getoption("--browser")
-
 
 @pytest.fixture
 def headless(request: pytest.FixtureRequest):
     return request.config.getoption("--headless")
 
-
 @pytest.fixture
 def setWebDriver(headless: str, browser: str):
-    # * Convertir el valor de headless a boolean:
     run = True if headless == "true" else False
-    # * Crear la instancia del Driver (dado el driver elegido por CLI):
+
     BROWSER_FUNCTIONS = {
         "chrome": Drivers(run).chromeDriver,
         "edge": Drivers(run).edgeDriver,
@@ -50,41 +46,27 @@ def setWebDriver(headless: str, browser: str):
     runDriver: WebDriver = driver()
     return runDriver
 
-
 @pytest.fixture
 def web(setWebDriver: WebDriver):
-    # * Obtener solamente la instancia del WebDriver
     return setWebDriver
-
 
 @pytest.fixture
 def get(web: WebDriver):
-    # * Crear nueva instancia de las utilidades de prueba (test utils):
-    get = Locators(web)
-    return get
+    return Locators(web)
 
-
-# * ---- Fixture para usar como BeforeEach y AfterEach: abre y cierra el navegador ----
 @pytest.fixture
 def setup(setWebDriver: WebDriver):
     web = setWebDriver
     get = Locators(web)
-    # * ESTA ES UNA FORMA INTELIGENTE DE MANEJAR TUS PRUEBAS!
-    # la forma más prolija que te puedo enseñar!
-    # todo: Se obtiene la URL de Google y se verifica el título
+
     web.implicitly_wait(10)
     get.page("https://google.com")
 
-    # todo:  Se verifica el título de la página
     title = web.title
     assert title == "Google"
 
-    # * Fin de la Precondición.
-    # todo: Aquí puedes colocar el código que quieres retornar del setup.
     yield (web, get)
-    # todo Código de la PostCondición.
-    web.quit()  # Se cierra el navegador
-
+    web.quit()
 
 @pytest.fixture
 def beforeEach(setWebDriver: WebDriver):
@@ -97,27 +79,26 @@ def beforeEach(setWebDriver: WebDriver):
     yield (web, get)
     web.quit()
 
-
 @pytest.fixture
 def validUser():
-    data = {
+    return {
         "username": "standard_user",
         "password": "secret_sauce"
     }
-    return data
-
 
 @pytest.fixture
-def loginSuccessful(beforeEach: Test, validUser: dict[str, str]):
+def loginSuccessful(beforeEach: Test, validUser: Dict[str, str]):
     web, get = beforeEach
-    loginPage = exLoginPage(web, get)
+    loginPage = LoginPage(web, get) 
+
     loginPage.enterUsername(validUser["username"])
     loginPage.enterPassword(validUser["password"])
     loginPage.submitLogin()
-    expect(web.current_url).toContain("/inventory")
+
+    expect = Expect(web.current_url)  
+    expect.toContain("/inventory")
+
     yield (web, get)
 
-
 if __name__ == "__main__":
-    # * Ejecución de las pruebas utilizando pytest
     pytest.main()
