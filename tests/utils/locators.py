@@ -4,9 +4,9 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
-
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from typing import List
 class Locators:
     """
     Clase que encapsula métodos reutilizables para encontrar y manipular elementos web.
@@ -37,6 +37,9 @@ class Locators:
     def byDataTest(self, value: str) -> WebElement:
         """Encuentra un elemento usando el atributo 'data-test' (muy común en testing)."""
         return self.web.find_element(By.CSS_SELECTOR, f'[data-test="{value}"]')
+    def byClasses(self, class_name: str) -> List[WebElement]:
+        """Encuentra una lista de elementos por clase CSS."""
+        return self.web.find_elements(By.CLASS_NAME, class_name)
 
     def waitUntilVisible(self, locator: str, timeout=10) -> WebElement:
         """
