@@ -2,13 +2,14 @@ import pytest
 from selenium.webdriver.remote.webdriver import WebDriver
 from tests.pages.login_page import LoginPage
 from tests.utils.asserts import Expect
+from typing import Tuple, Dict
 
 class TestLogin:
     """
     Clase de pruebas para validar el proceso de login.
     """
 
-    def test_successful_login(self, beforeEach: tuple[WebDriver, object], validUser: dict[str, str]):
+    def test_successful_login(self, beforeEach: Tuple[WebDriver, object], validUser: Dict[str, str]):
         """
         Verifica que un usuario válido pueda iniciar sesión correctamente.
         """

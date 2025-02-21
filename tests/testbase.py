@@ -1,5 +1,6 @@
 # __________
 # # * 🧪 ESTE es un archivo que puede englobar TODAS las interacciones con las pruebas, sobretodo la instancia del driver.
+from typing import Tuple
 from selenium.webdriver.remote.webdriver import WebDriver
 from tests.utils.locators import Locators
 from tests.utils.drivers import Drivers as Drivers
@@ -9,4 +10,4 @@ from tests.pages.exampleLoginPage import LoginPage as exLoginPage
 
 # * INTERFACES
 
-Test = tuple[WebDriver, Locators]
+Test = Tuple[WebDriver, Locators]

@@ -1,12 +1,13 @@
 from selenium.webdriver.remote.webdriver import WebDriver
-from tests.utils.locator import Locator  # Importamos el nuevo Locator
+from tests.utils.locators import Locators  # Importamos Locators
 
 class LoginPage:
     """
     Clase que representa la página de Login usando el patrón POM.
     """
-    def __init__(self, driver: WebDriver):
-        self.get = Locator(driver)  # Instancia de Locator
+    def __init__(self, driver: WebDriver, locator: Locators):
+        self.web = driver  # ✅ Guarda el WebDriver correctamente
+        self.get = locator  # ✅ Usa correctamente el `locator`
 
     def enterUsername(self, username: str):
         """Ingresa el nombre de usuario."""
