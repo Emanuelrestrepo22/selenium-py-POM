@@ -36,14 +36,22 @@ class Drivers:
     def chromeDriver(self):
         """ Se crea una instancia del ChromeDriver con configuraciones optimizadas """
         execution = ChromeOpt()
+        
+        #Opciones necesarias para evitar errores en github Actions
         execution.add_argument("--no-sandbox")  # Evita problemas en GitHub Actions
         execution.add_argument("--disable-dev-shm-usage")  # Optimiza memoria en entornos Linux
         execution.add_argument("--disable-gpu")  # Evita problemas gráficos en CI
         execution.add_argument("--incognito")  # Modo incógnito para evitar conflictos de usuario
         execution.add_argument("--disable-extensions")  # Reduce interferencias
         execution.add_argument("--remote-allow-origins=*")  # Evita restricciones remotas
-        if self.isHeadless:
-            execution.add_argument("--headless")  # Corre en modo headless si está activado
+        execution.add_argument("--disable-infobars")  # Oculta mensajes emergentes de Chrome
+        execution.add_argument("--disable-popup-blocking")  # Evita bloqueos de popups
+        execution.add_argument("--disable-blink-features=AutomationControlled")  # Evita detección de automatización
+        execution.add_argument("--headless")  # Corre en modo headless (necesario en GitHub Actions)
+
+        # 🔹 SOLUCIÓN DEL ERROR: Especificar un perfil de usuario temporal para evitar conflictos
+        execution.add_argument(f"--user-data-dir=/tmp/chrome-test-profile-{self.isHeadless}")
+
         return webdriver.Chrome(service=ChromiumService(ChromeDriverManager().install()), options=execution)
 
     def edgeDriver(self):
