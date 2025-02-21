@@ -1,2 +1,23 @@
+# Framework de pruebas
+pytest
+
+# Selenium para automatización
+selenium
+
+# Manejo automático de WebDrivers (Chrome, Firefox, Edge)
 webdriver-manager
-webdriver-manager
+
+# Manejo de variables de entorno (buena práctica)
+python-dotenv
+
+# Reporte de pruebas en HTML
+pytest-html
+
+# Manejo de datos en formato JSON/YAML
+pyyaml
+
+# Manejo de logs detallados (buena práctica en pruebas)
+loguru
+
+# Herramienta para esperar elementos dinámicos en Selenium (opcional)
+selenium-wire
