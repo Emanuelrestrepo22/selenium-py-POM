@@ -56,3 +56,7 @@ class Locators:
     def clickElement(self, element: WebElement):
         """Hace clic en un elemento usando ActionChains (por si hay problemas de visibilidad)."""
         ActionChains(self.web).move_to_element(element).click().perform()
+        
+    def contains(self, text: str):
+        """Busca elementos que contengan un texto específico."""
+        return self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{text}')]")
