@@ -33,4 +33,7 @@ jobs:
         env:
           SWL_USERNAME: ${{ secrets.SWL_USERNAME }}
           SWL_PASSWORD: ${{ secrets.SWL_PASSWORD }}
-        run: pytest tests/ --disable-warnings
+        run: |
+          export SWL_USERNAME="${SWL_USERNAME:-standard_user}"
+          export SWL_PASSWORD="${SWL_PASSWORD:-secret_sauce}"
+          pytest tests/ --disable-warnings
