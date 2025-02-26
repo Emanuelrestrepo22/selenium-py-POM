@@ -6,7 +6,8 @@ from tests.utils.locators import Locators
 from tests.utils.drivers import Drivers as Drivers
 from tests.utils.asserts import Expect as expect
 from time import sleep as wait
-from tests.pages.exampleLoginPage import LoginPage as exLoginPage
+from tests.e2e.auth import test_login as exLoginPage
+
 
 # * INTERFACES
 
