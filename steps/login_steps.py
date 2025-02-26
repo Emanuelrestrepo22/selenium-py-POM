@@ -1,4 +1,4 @@
-from behave import given, when, then
+from behave import given, when, then # type: ignore
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
