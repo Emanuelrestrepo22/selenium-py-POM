@@ -7,7 +7,7 @@ from tests.pages.login_page import LoginPage
 from tests.utils.locators import Locators
 from tests.utils.asserts import Expect
 
-@pytest.mark.usefixtures("validUser")  # Asegura que validUser se inyecta correctamente
+@pytest.mark.usefixtures("validUser")
 def test_add_to_cart(driver, validUser):
     """Verifica que al hacer click en 'Add to cart', el contador del carrito se actualiza correctamente."""
 
@@ -53,4 +53,3 @@ def test_add_to_cart(driver, validUser):
     expect.toBeEqual(num_products_to_add)
 
     print(f"Se agregaron {num_products_to_add} productos al carrito y el badge muestra {cart_count}")
-

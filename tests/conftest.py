@@ -6,7 +6,7 @@ from tests.testbase import *
 from tests.utils.asserts import Expect
 from tests.utils.drivers import Drivers
 from tests.utils.locators import Locators
-from tests.pages.login_page import LoginPage  
+from tests.pages.login_page import LoginPage
 
 Test = Tuple[WebDriver, Locators]
 
@@ -82,10 +82,20 @@ def beforeEach(setWebDriver: WebDriver):
 
 @pytest.fixture
 def validUser() -> Dict[str, str]:
-    return {
-        "username": os.getenv("SWL_USERNAME", "standard_user"),
-        "password": os.getenv("SWL_PASSWORD", "secret_sauce")
-    }
+    username = os.getenv("SWL_USERNAME", "").strip()
+    password = os.getenv("SWL_PASSWORD", "").strip()
+
+    if not username or not password:
+        pytest.fail("Las credenciales no están definidas en las variables de entorno.")
+
+    return {"username": username, "password": password}
+
+@pytest.fixture
+def driver(setWebDriver: WebDriver):
+    """Devuelve el WebDriver configurado y lo cierra después de la ejecución."""
+    web_driver = setWebDriver
+    yield web_driver
+    web_driver.quit()
 
 @pytest.fixture
 def loginSuccessful(beforeEach: Test, validUser: Dict[str, str]):
