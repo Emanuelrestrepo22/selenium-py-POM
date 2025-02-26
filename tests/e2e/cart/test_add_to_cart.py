@@ -44,7 +44,7 @@ def test_add_to_cart(driver):
     # Verificar si hay un mensaje de error en el login
     error_message = driver.find_elements(By.CLASS_NAME, "error-message-container")
     if error_message:
-        print("❌ ERROR: Fallo en el login. Verifica las credenciales o si el sitio cambió su flujo.")
+        print(" ERROR: Fallo en el login. Verifica las credenciales o si el sitio cambió su flujo.")
         driver.save_screenshot("error_login.png")
         assert False, "El login falló."
 
@@ -73,7 +73,7 @@ def test_add_to_cart(driver):
     # Verificar si hay un mensaje de error en la página
     error_message = driver.find_elements(By.CLASS_NAME, "error-message-container")
     if error_message:
-        print("❌ ERROR: Fallo en el login. Verifica las credenciales o si el sitio cambió su flujo.")
+        print(" ERROR: Fallo en el login. Verifica las credenciales o si el sitio cambió su flujo.")
         driver.save_screenshot("error_login.png")  # Guardar una captura para depurar
     
 
