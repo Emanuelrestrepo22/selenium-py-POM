@@ -4,3 +4,4 @@ __pycache__/
 .conda/
 screenshots/
 .env
+tests\conftest.py

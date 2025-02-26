@@ -1,14 +1,14 @@
 import pytest
+import os
 from selenium.webdriver.remote.webdriver import WebDriver
-from typing import Tuple, Dict  # ✅ Corrección de import
-
+from typing import Tuple, Dict
 from tests.testbase import *
 from tests.utils.asserts import Expect
 from tests.utils.drivers import Drivers
 from tests.utils.locators import Locators
-from tests.pages.login_page import LoginPage  # ✅ Importar LoginPage
+from tests.pages.login_page import LoginPage  
 
-Test = Tuple[WebDriver, Locators]  # ✅ Definir Test correctamente
+Test = Tuple[WebDriver, Locators]
 
 def pytest_addoption(parser: pytest.Parser):
     parser.addoption(
@@ -32,18 +32,19 @@ def headless(request: pytest.FixtureRequest):
 
 @pytest.fixture
 def setWebDriver(headless: str, browser: str):
-    run = True if headless == "true" else False
+    run = headless.lower() == "true"
 
     BROWSER_FUNCTIONS = {
         "chrome": Drivers(run).chromeDriver,
         "edge": Drivers(run).edgeDriver,
         "firefox": Drivers(run).firefoxDriver
     }
-    driver = BROWSER_FUNCTIONS.get(browser)
-    if not driver:
+    
+    driver_function = BROWSER_FUNCTIONS.get(browser)
+    if not driver_function:
         raise ValueError(f'Browser "{browser}" not supported.')
 
-    runDriver: WebDriver = driver()
+    runDriver: WebDriver = driver_function()
     return runDriver
 
 @pytest.fixture
@@ -62,8 +63,7 @@ def setup(setWebDriver: WebDriver):
     web.implicitly_wait(10)
     get.page("https://google.com")
 
-    title = web.title
-    assert title == "Google"
+    assert web.title == "Google"
 
     yield (web, get)
     web.quit()
@@ -74,16 +74,17 @@ def beforeEach(setWebDriver: WebDriver):
     get = Locators(web)
     web.implicitly_wait(10)
     get.page("https://www.saucedemo.com/")
-    title = web.title
-    assert title == "Swag Labs"
+    
+    assert web.title == "Swag Labs"
+    
     yield (web, get)
     web.quit()
 
 @pytest.fixture
-def validUser():
+def validUser() -> Dict[str, str]:
     return {
-        "username": "standard_user",
-        "password": "secret_sauce"
+        "username": os.getenv("SWL_USERNAME", "standard_user"),
+        "password": os.getenv("SWL_PASSWORD", "secret_sauce")
     }
 
 @pytest.fixture

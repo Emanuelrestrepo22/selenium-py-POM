@@ -1,61 +1,28 @@
-import os
-from dotenv import load_dotenv
 import pytest
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from tests.pages.product_list_page import ProductListPage
 from tests.pages.login_page import LoginPage
 from tests.utils.locators import Locators
 from tests.utils.asserts import Expect
-from selenium.webdriver.support import expected_conditions as EC
 
-# Cargar variables de entorno
-load_dotenv()
-
-@pytest.fixture
-def driver():
-    """Configura y devuelve el WebDriver en modo headless para GitHub Actions."""
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Modo sin UI
-    chrome_options.add_argument("--disable-gpu")  # Evita errores de aceleración
-    chrome_options.add_argument("--no-sandbox")  # Necesario para entornos CI
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Evita problemas de memoria compartida
-    chrome_options.add_argument("--remote-debugging-port=9222")  # Permite debugging en CI
-    chrome_options.add_argument("--user-data-dir=/tmp/chrome-user-data")  # Directorio de usuario único
-    chrome_options.add_argument("--no-first-run")  # Evita errores en el primer arranque
-
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
-    driver.maximize_window()
-    yield driver
-    driver.quit()
-
-
-def test_add_to_cart(driver):  # sourcery skip: use-named-expression
+@pytest.mark.usefixtures("validUser")  # Asegura que validUser se inyecta correctamente
+def test_add_to_cart(driver, validUser):
     """Verifica que al hacer click en 'Add to cart', el contador del carrito se actualiza correctamente."""
 
     # Paso 1: Iniciar sesión en la aplicación
     login_page = LoginPage(driver, Locators(driver))
     login_page.go_to_login_page()
 
-    # Obtener credenciales
-    username = os.getenv("SWL_USERNAME", "").strip()
-    password = os.getenv("SWL_PASSWORD", "").strip()
-    
-    if not username or not password:
-        raise ValueError("Las credenciales no están definidas en las variables de entorno.")
-
-    login_page.enterUsername(username)
-    login_page.enterPassword(password)
+    login_page.enterUsername(validUser["username"])
+    login_page.enterPassword(validUser["password"])
     login_page.submitLogin()
 
     # Verificar si hay un mensaje de error en el login
     error_message = driver.find_elements(By.CLASS_NAME, "error-message-container")
     if error_message:
-        print(" ERROR: Fallo en el login. Verifica las credenciales o si el sitio cambió su flujo.")
+        print("ERROR: Fallo en el login. Verifica las credenciales o si el sitio cambió su flujo.")
         driver.save_screenshot("error_login.png")
         assert False, "El login falló."
 
@@ -67,26 +34,6 @@ def test_add_to_cart(driver):  # sourcery skip: use-named-expression
 
     # Validar que un elemento clave en la página se ha cargado
     assert driver.find_element(By.CLASS_NAME, "title").text == "Products", "No se cargó la página de productos después del login."
-
-    """Verifica que al hacer click en 'Add to cart', el contador del carrito se actualiza correctamente."""
-    
-    # Paso 1: Iniciar sesión en la aplicación
-    login_page = LoginPage(driver, Locators(driver))
-    login_page.go_to_login_page()
-    
-    username = os.getenv("SWL_USERNAME", "").strip()
-    password = os.getenv("SWL_PASSWORD", "").strip()
-    if not username or not password:
-        raise ValueError("Las credenciales no están definidas en las variables de entorno.")
-    login_page.enterUsername(username)
-    login_page.enterPassword(password)
-    
-    # Verificar si hay un mensaje de error en la página
-    error_message = driver.find_elements(By.CLASS_NAME, "error-message-container")
-    if error_message:
-        print(" ERROR: Fallo en el login. Verifica las credenciales o si el sitio cambió su flujo.")
-        driver.save_screenshot("error_login.png")  # Guardar una captura para depurar
-    
 
     # Paso 2: Navegar a la página de productos
     product_list_page = ProductListPage(driver, Locators(driver))
@@ -106,3 +53,4 @@ def test_add_to_cart(driver):  # sourcery skip: use-named-expression
     expect.toBeEqual(num_products_to_add)
 
     print(f"Se agregaron {num_products_to_add} productos al carrito y el badge muestra {cart_count}")
+
