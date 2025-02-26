@@ -40,7 +40,7 @@ class ProductListPage:
     ## **🟢 Métodos para Interacción con Productos** ##
     def get_product_list(self):
         """Obtiene la lista de todos los productos en la página."""
-        return self.get.allByDataTest('inventory-item')
+        return self.get.byClasses('inventory-item')
 
     def get_product_name(self, product_element):
         """Obtiene el nombre de un producto desde su card."""
