@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -17,13 +18,23 @@ load_dotenv()
 
 @pytest.fixture
 def driver():
-    """Configura y devuelve el WebDriver."""
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    """Configura y devuelve el WebDriver en modo headless para GitHub Actions."""
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Modo sin UI
+    chrome_options.add_argument("--disable-gpu")  # Evita errores de aceleración
+    chrome_options.add_argument("--no-sandbox")  # Necesario para entornos CI
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Evita problemas de memoria compartida
+    chrome_options.add_argument("--remote-debugging-port=9222")  # Permite debugging en CI
+    chrome_options.add_argument("--user-data-dir=/tmp/chrome-user-data")  # Directorio de usuario único
+    chrome_options.add_argument("--no-first-run")  # Evita errores en el primer arranque
+
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
     driver.maximize_window()
     yield driver
     driver.quit()
 
-def test_add_to_cart(driver):
+
+def test_add_to_cart(driver):  # sourcery skip: use-named-expression
     """Verifica que al hacer click en 'Add to cart', el contador del carrito se actualiza correctamente."""
 
     # Paso 1: Iniciar sesión en la aplicación
