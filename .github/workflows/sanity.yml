@@ -1,5 +1,5 @@
 name: 🤖 CI Run SanityTest Execution 🧪
-run-name: ${{github.actor}} 👨🏻‍🔬 ran SanityTest in ${{github.ref_name}}
+run-name: ${{ github.actor }} 👨🏻‍🔬 ran SanityTest in ${{ github.ref_name }}
 
 on:
   push:
@@ -30,4 +30,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: 🧪 Run Selenium Tests with Pytest
+        env:
+          SWL_USERNAME: ${{ secrets.SWL_USERNAME }}
+          SWL_PASSWORD: ${{ secrets.SWL_PASSWORD }}
         run: pytest tests/ --disable-warnings
