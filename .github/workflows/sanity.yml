@@ -4,12 +4,11 @@ run-name: ${{ github.actor }} 👨🏻‍🔬 ran SanityTest in ${{ github.ref_n
 on:
   push:
     branches:
-      - main
-      - QA
+      - '**' # Se ejecuta en cualquier rama
   pull_request:
     branches:
-      - main
-      - QA
+      - '**' # Se ejecuta en PRs a cualquier rama
+  workflow_dispatch: # Permite ejecución manual desde GitHub Actions UI
 
 jobs:
   SanityTest:

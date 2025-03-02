@@ -15,10 +15,9 @@ from tests.utils.locators import Locators
 # Cargar variables desde el archivo .env
 load_dotenv()
 
+
 @given('que el usuario está en la página de login')
 def step_open_login_page(context):
-    context.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    context.locators = Locators(context.driver)  # Instancia de la clase Locators
 
     login_url = os.getenv("LOGIN_URL", "").strip()
     if not login_url:
