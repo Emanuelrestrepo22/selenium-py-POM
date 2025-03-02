@@ -24,15 +24,12 @@ jobs:
           python-version: '3.11.5'
 
       - name: 🧬 Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: 🧪 Run Selenium Tests with Pytest
         env:
           SWL_USERNAME: ${{ secrets.SWL_USERNAME }}
           SWL_PASSWORD: ${{ secrets.SWL_PASSWORD }}
         run: |
-          export SWL_USERNAME="${SWL_USERNAME:-standard_user}"
-          export SWL_PASSWORD="${SWL_PASSWORD:-secret_sauce}"
+          if [[ -z "$SWL_USERNAME" || -z "$SWL_PASSWORD" ]]; then
+            echo "❌ ERROR: Variables de entorno no definidas en GitHub Secrets."
+            exit 1
+          fi
           pytest tests/ --disable-warnings
