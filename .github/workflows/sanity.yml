@@ -4,15 +4,16 @@ run-name: ${{ github.actor }} 👨🏻‍🔬 ran SanityTest in ${{ github.ref_n
 on:
   push:
     branches:
-      - '**' # Se ejecuta en cualquier rama
+      - '**'
   pull_request:
     branches:
-      - '**' # Se ejecuta en PRs a cualquier rama
-  workflow_dispatch: # Permite ejecución manual desde GitHub Actions UI
+      - '**'
+  workflow_dispatch:
 
 jobs:
   SanityTest:
     runs-on: ubuntu-latest
+    environment: CI-Testing # 🔹 Aquí usamos el Environment creado en GitHub
 
     steps:
       - name: 💻 Checkout Repository
@@ -24,12 +25,18 @@ jobs:
           python-version: '3.11.5'
 
       - name: 🧬 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest  # Instalar pytest manualmente
+
+      - name: 🧪 Run Selenium Tests with Pytest
         env:
-          SWL_USERNAME: ${{ secrets.SWL_USERNAME }}
-          SWL_PASSWORD: ${{ secrets.SWL_PASSWORD }}
+          SWL_USERNAME: ${{ vars.SWL_USERNAME }} # Se obtiene desde el Environment "CI-Testing"
+          SWL_PASSWORD: ${{ vars.SWL_PASSWORD }}
         run: |
           if [[ -z "$SWL_USERNAME" || -z "$SWL_PASSWORD" ]]; then
-            echo "❌ ERROR: Variables de entorno no definidas en GitHub Secrets."
+            echo "❌ ERROR: Variables de entorno no definidas en GitHub."
             exit 1
           fi
           pytest tests/ --disable-warnings
