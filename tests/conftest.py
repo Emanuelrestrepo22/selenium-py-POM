@@ -1,13 +1,14 @@
 import pytest
 import os
 from selenium.webdriver.remote.webdriver import WebDriver
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Optional
 from tests.testbase import *
 from tests.utils.asserts import Expect
 from tests.utils.drivers import Drivers
 from tests.utils.locators import Locators
 from tests.pages.login_page import LoginPage
 
+#alias para tipo de datos utilizando pruebas
 Test = Tuple[WebDriver, Locators]
 
 def pytest_addoption(parser: pytest.Parser):
