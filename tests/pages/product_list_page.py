@@ -40,7 +40,10 @@ class ProductListPage:
     ## **🟢 Métodos para Interacción con Productos** ##
     def get_product_list(self):
         """Obtiene la lista de todos los productos en la página."""
-        return self.get.byClasses('inventory-item')
+        WebDriverWait(self.driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'inventory_item'))
+        )
+        return self.get.byClasses('inventory_item')
 
     def get_product_name(self, product_element):
         """Obtiene el nombre de un producto desde su card."""
@@ -51,17 +54,53 @@ class ProductListPage:
         return product_element.find_element(By.CSS_SELECTOR, '[data-test="inventory-item-price"]').text
 
     def add_product_to_cart(self, product_name):
-        """Añade un producto al carrito usando su nombre."""
+        """
+        Añade un producto al carrito usando su nombre, 
+        verificando si ya está añadido (botón "Remove" en vez de "Add to Cart").
+        """
         products = self.get_product_list()
-        for product in products:
-            if self.get_product_name(product) == product_name:
-                product.find_element(By.CSS_SELECTOR, '[data-test^="add-to-cart"]').click()
-                return True  # Producto añadido al carrito
-        return False  # Producto no encontrado
 
-    def remove_product_from_cart(self, product_name):
-        """Elimina un producto del carrito usando su nombre."""
-        products = self.get_product_list()
         for product in products:
             if self.get_product_name(product) == product_name:
-                product.find_element(By.CSS_SELECTOR, '[data-test^="remove"]').click()
+                add_button = product.find_elements(By.CSS_SELECTOR, '[data-test^="add-to-cart"]')
+                remove_button = product.find_elements(By.CSS_SELECTOR, '[data-test^="remove-sauce-labs"]')
+
+                if remove_button:
+                    print(f"⚠ El producto '{product_name}' ya está en el carrito, omitiendo.")
+                    return False  # No es necesario añadirlo
+
+                if add_button:
+                    add_button[0].click()
+                    return True  # Producto añadido al carrito
+
+        return False  # Producto no encontrado
+    
+    def remove_product_from_cart(self):
+        """
+        Elimina todos los productos añadidos al carrito, asegurando que la página está actualizada.
+        """
+        # ⚠ Asegurarse de que el usuario está en la página correcta después del relogin
+        if "/inventory.html" not in self.driver.current_url:
+            self.go_to_product_list()
+
+        # ⚠ Esperar a que la lista de productos se actualice tras el relogin
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'inventory_item'))
+     )
+
+        products = self.get_product_list()  # ⚠ Reobtener la lista de productos
+        removed_count = 0  # Contador de productos eliminados
+
+        for product in products:
+            remove_buttons = product.find_elements(By.CSS_SELECTOR, '[data-test^="remove-sauce-labs"]')
+
+            if remove_buttons:
+                remove_button = remove_buttons[0]  # Tomamos el primer botón encontrado
+                WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(remove_button))
+                remove_button.click()
+                removed_count += 1
+
+        if removed_count == 0:
+            raise ValueError("No se encontraron productos en el carrito para remover.")
+
+        print(f" {removed_count} productos eliminados del carrito.")
