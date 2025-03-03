@@ -86,7 +86,7 @@ class ProductListPage:
         # ⚠ Esperar a que la lista de productos se actualice tras el relogin
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'inventory_item'))
-     )
+        )
 
         products = self.get_product_list()  # ⚠ Reobtener la lista de productos
         removed_count = 0  # Contador de productos eliminados
@@ -104,3 +104,20 @@ class ProductListPage:
             raise ValueError("No se encontraron productos en el carrito para remover.")
 
         print(f" {removed_count} productos eliminados del carrito.")
+        
+        
+        
+    def remove_first_product_from_cart(self):
+        products = self.get_product_list()
+
+        for product in products:
+            remove_buttons = product.find_elements(By.CSS_SELECTOR, '[data-test^="remove-sauce-labs"]')
+
+            if remove_buttons:
+                remove_button = remove_buttons[0]
+                WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test^="remove-sauce-labs"]')))
+                remove_button.click()
+                return True  # Producto removido
+
+        return False  # No se encontraron productos para remover
+
