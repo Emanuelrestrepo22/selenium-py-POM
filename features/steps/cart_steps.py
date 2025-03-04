@@ -1,7 +1,6 @@
 # tests/steps/cart_steps.py
 
-from behave import given, when, then
-from selenium.webdriver.common.by import By
+from behave import given, when, then, step # type: ignore
 from dotenv import load_dotenv
 import os
 from tests.pages.login_page import LoginPage
@@ -39,12 +38,12 @@ def step_user_on_product_list(context):
     # Instanciar la página de lista de productos
     context.product_list_page = ProductListPage(context.driver, context.locators)
 
-@given('que el usuario ha añadido {num_products} productos al carrito')
+@given('que el usuario ha añadido {num_products:d} productos al carrito')
 def step_user_added_products_to_cart(context, num_products):
     """
-    Paso que añade una cantidad específica de productos al carrito.
+    Paso que asegura que el usuario ha añadido una cantidad específica de productos al carrito.
     """
-    num_products = int(num_products)
+    # Obtener la lista de productos disponibles
     products = context.product_list_page.get_product_list()
 
     # Verificar que hay suficientes productos disponibles
@@ -64,12 +63,19 @@ def step_user_added_products_to_cart(context, num_products):
     expect.toBeEqual(num_products)
     print(f"Se han añadido {cart_count} productos al carrito.")
 
-@when('el usuario remueve {num_products} productos del carrito')
+@when('el usuario añade {num_products:d} productos al carrito')
+def step_add_products_to_cart(context, num_products):
+    """
+    Paso que añade una cantidad específica de productos al carrito.
+    """
+    # Reutilizar el paso dado que añade productos al carrito
+    context.execute_steps(f'Given que el usuario ha añadido {num_products} productos al carrito')
+
+@when('el usuario remueve {num_products:d} productos del carrito')
 def step_remove_products_from_cart(context, num_products):
     """
     Paso que remueve una cantidad específica de productos del carrito.
     """
-    num_products = int(num_products)
     removed_count = 0
 
     # Intentar remover la cantidad especificada de productos
@@ -85,12 +91,11 @@ def step_remove_products_from_cart(context, num_products):
     if removed_count < num_products:
         raise ValueError(f"Se intentaron remover {num_products} productos, pero solo se pudieron remover {removed_count}.")
 
-@then('debería ver el número {expected_count} en el icono del carrito')
+@then('debería ver el número {expected_count:d} en el icono del carrito')
 def step_verify_cart_count(context, expected_count):
     """
     Paso que verifica que el icono del carrito muestra la cantidad correcta de productos.
     """
-    expected_count = int(expected_count)
     cart_count = context.product_list_page.get_cart_count()
     expect = Expect(cart_count)
     expect.toBeEqual(expected_count)
