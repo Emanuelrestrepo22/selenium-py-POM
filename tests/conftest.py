@@ -44,9 +44,9 @@ def headless(request: pytest.FixtureRequest):
 def setWebDriver(headless: str, browser: str):
     run = headless.lower() == "true"
 
-    chrome_options = Options()
+    chrome_options = ChromeOptions()
 
-    # 🚀 Opciones para evitar errores SSL y otros errores de conexión
+    # 🚀 Opciones para evitar errores SSL y mejorar la estabilidad en CI/CD
     chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument("--allow-insecure-localhost")
     chrome_options.add_argument("--allow-running-insecure-content")
@@ -55,7 +55,11 @@ def setWebDriver(headless: str, browser: str):
     chrome_options.add_argument("--disable-popup-blocking")
     chrome_options.add_argument("--log-level=3")
 
-    # 🔹 Solución: Forzar Modo Incógnito en lugar de usar `--user-data-dir`
+    # 🔹 Mejora la estabilidad en CI/CD evitando optimizaciones agresivas de Chrome
+    chrome_options.add_argument("--disable-background-timer-throttling")
+    chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+
+    # 🔹 Forzar modo incógnito (en lugar de usar `--user-data-dir`)
     chrome_options.add_argument("--incognito")
 
     # 🔹 Modo Headless en entornos CI/CD
@@ -72,6 +76,7 @@ def setWebDriver(headless: str, browser: str):
 
     service = ChromeService(ChromeDriverManager().install())
     return webdriver.Chrome(service=service, options=chrome_options)
+
 @pytest.fixture
 def web(setWebDriver: WebDriver):
     return setWebDriver
