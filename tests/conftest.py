@@ -55,8 +55,8 @@ def setWebDriver(headless: str, browser: str):
     chrome_options.add_argument("--disable-popup-blocking")
     chrome_options.add_argument("--log-level=3")
 
-    # 🔹 Solución: Usar un directorio único para evitar conflicto en entornos CI/CD
-    chrome_options.add_argument(f"--user-data-dir=/tmp/chrome-user-data-{os.getpid()}")
+    # 🔹 Solución: Forzar Modo Incógnito en lugar de usar `--user-data-dir`
+    chrome_options.add_argument("--incognito")
 
     # 🔹 Modo Headless en entornos CI/CD
     if run:
@@ -67,14 +67,11 @@ def setWebDriver(headless: str, browser: str):
     chrome_options.add_argument("--disable-dev-shm-usage")
 
     # 🚀 Configuración del Driver según el navegador
-    if browser == "chrome":
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-    else:
+    if browser != "chrome":
         raise ValueError(f'Browser "{browser}" not supported.')
 
-    return driver
-
+    service = ChromeService(ChromeDriverManager().install())
+    return webdriver.Chrome(service=service, options=chrome_options)
 @pytest.fixture
 def web(setWebDriver: WebDriver):
     return setWebDriver
