@@ -1,4 +1,5 @@
 import os
+import tempfile
 import pytest
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -40,12 +41,15 @@ def headless(request: pytest.FixtureRequest):
 
 @pytest.fixture
 def setWebDriver(headless: str, browser: str):
-    """Configura y devuelve el WebDriver según el navegador especificado."""
+    """
+    Configura y devuelve el WebDriver según el navegador especificado.
+    Se crea un directorio único para 'user-data-dir' usando tempfile para evitar conflictos.
+    """
     run = headless.lower() == "true"
 
     chrome_options = Options()
 
-    # 🚀 Opciones para mejorar la estabilidad en CI/CD
+    # Opciones para mejorar la estabilidad en CI/CD y evitar errores SSL
     chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument("--allow-insecure-localhost")
     chrome_options.add_argument("--allow-running-insecure-content")
@@ -54,14 +58,18 @@ def setWebDriver(headless: str, browser: str):
     chrome_options.add_argument("--disable-popup-blocking")
     chrome_options.add_argument("--log-level=3")
 
-    # 🔹 Evita bloqueos por inactividad
+    # Evitar bloqueos por inactividad
     chrome_options.add_argument("--disable-background-timer-throttling")
     chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 
-    # 🔹 Forzar modo incógnito en lugar de `--user-data-dir`
+    # Forzar modo incógnito
     chrome_options.add_argument("--incognito")
 
-    # 🔹 Modo Headless en entornos CI/CD
+    # 🔹 Solución: Crear un directorio único para user data
+    temp_dir = tempfile.mkdtemp()
+    chrome_options.add_argument(f"--user-data-dir={temp_dir}")
+
+    # Modo Headless (si se requiere)
     if run:
         chrome_options.add_argument("--headless")
 
@@ -69,20 +77,18 @@ def setWebDriver(headless: str, browser: str):
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    # 🚀 Configuración del Driver según el navegador
+    # Configuración del Driver según el navegador (solo Chrome en este ejemplo)
     if browser == "chrome":
         service = ChromeService(ChromeDriverManager().install())
         return webdriver.Chrome(service=service, options=chrome_options)
-
-    if browser == "firefox":
-        service = FirefoxService(GeckoDriverManager().install())
-        return webdriver.Firefox(service=service)
-
-    if browser == "edge":
+    elif browser == "edge":
         service = EdgeService(EdgeChromiumDriverManager().install())
         return webdriver.Edge(service=service)
-
-    raise ValueError(f'Browser "{browser}" not supported.')
+    elif browser == "firefox":
+        service = FirefoxService(GeckoDriverManager().install())
+        return webdriver.Firefox(service=service)
+    else:
+        raise ValueError(f'Browser "{browser}" not supported.')
 
 @pytest.fixture
 def web(setWebDriver: WebDriver):
