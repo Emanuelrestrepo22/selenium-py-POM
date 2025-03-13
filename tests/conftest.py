@@ -1,10 +1,8 @@
 import os
-import tempfile
 import pytest
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver
 from typing import Tuple, Dict
-from tests.testbase import *
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -41,15 +39,12 @@ def headless(request: pytest.FixtureRequest):
 
 @pytest.fixture
 def setWebDriver(headless: str, browser: str):
-    """
-    Configura y devuelve el WebDriver según el navegador especificado.
-    Se crea un directorio único para 'user-data-dir' usando tempfile para evitar conflictos.
-    """
+    """Configura y devuelve el WebDriver según el navegador especificado."""
     run = headless.lower() == "true"
 
     chrome_options = Options()
 
-    # Opciones para mejorar la estabilidad en CI/CD y evitar errores SSL
+    # 🚀 Opciones para mejorar la estabilidad en CI/CD
     chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument("--allow-insecure-localhost")
     chrome_options.add_argument("--allow-running-insecure-content")
@@ -58,37 +53,39 @@ def setWebDriver(headless: str, browser: str):
     chrome_options.add_argument("--disable-popup-blocking")
     chrome_options.add_argument("--log-level=3")
 
-    # Evitar bloqueos por inactividad
+    # 🔹 Evita bloqueos por inactividad en GitHub Actions
     chrome_options.add_argument("--disable-background-timer-throttling")
     chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 
-    # Forzar modo incógnito
+    # 🔹 Modo incógnito en vez de `--user-data-dir`
     chrome_options.add_argument("--incognito")
 
-    # 🔹 Solución: Crear un directorio único para user data
-    temp_dir = tempfile.mkdtemp()
-    chrome_options.add_argument(f"--user-data-dir={temp_dir}")
-
-    # Modo Headless (si se requiere)
+    # 🔹 Modo Headless en entornos CI/CD
     if run:
         chrome_options.add_argument("--headless")
 
-    chrome_options.add_argument("--disable-gpu")
+    # 🔹 🔥 **Solución para GitHub Actions**
     chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-software-rasterizer")  # Evita fallos gráficos
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Previene errores en memoria
+    chrome_options.add_argument("--remote-debugging-port=9222")  # Evita bloqueos de DevTools
+    chrome_options.add_argument("--guest")  # Ejecuta Chrome sin usuario previo
 
-    # Configuración del Driver según el navegador (solo Chrome en este ejemplo)
+    # 🚀 Configuración del Driver según el navegador
     if browser == "chrome":
         service = ChromeService(ChromeDriverManager().install())
         return webdriver.Chrome(service=service, options=chrome_options)
-    elif browser == "edge":
-        service = EdgeService(EdgeChromiumDriverManager().install())
-        return webdriver.Edge(service=service)
-    elif browser == "firefox":
+
+    if browser == "firefox":
         service = FirefoxService(GeckoDriverManager().install())
         return webdriver.Firefox(service=service)
-    else:
-        raise ValueError(f'Browser "{browser}" not supported.')
+
+    if browser == "edge":
+        service = EdgeService(EdgeChromiumDriverManager().install())
+        return webdriver.Edge(service=service)
+
+    raise ValueError(f'Browser "{browser}" not supported.')
 
 @pytest.fixture
 def web(setWebDriver: WebDriver):
