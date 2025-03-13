@@ -3,10 +3,13 @@ import os
 from selenium.webdriver.remote.webdriver import WebDriver
 from typing import Tuple, Dict, Optional
 from tests.testbase import *
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 from tests.utils.asserts import Expect
 from tests.utils.drivers import Drivers
 from tests.utils.locators import Locators
 from tests.pages.login_page import LoginPage
+from selenium.webdriver.chrome.options import Options
 
 #alias para tipo de datos utilizando pruebas
 Test = Tuple[WebDriver, Locators]
@@ -93,6 +96,21 @@ def validUser() -> Dict[str, str]:
 
 @pytest.fixture
 def driver(setWebDriver: WebDriver):
+    
+    """Configura y devuelve el WebDriver con opciones avanzadas para evitar errores SSL."""
+    chrome_options = Options()
+    
+    # 🚀 Opciones para evitar errores SSL
+    chrome_options.add_argument("--ignore-certificate-errors")
+    chrome_options.add_argument("--allow-running-insecure-content")
+    chrome_options.add_argument("--disable-web-security")
+    
+    # Opciones de ejecución en entornos CI/CD
+    chrome_options.add_argument("--headless")  
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
     """Devuelve el WebDriver configurado y lo cierra después de la ejecución."""
     web_driver = setWebDriver
     yield web_driver

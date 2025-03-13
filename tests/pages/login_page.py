@@ -15,7 +15,9 @@ class LoginPage:
     def __init__(self, driver: WebDriver, locator: Locators):
         self.web = driver  # saved webdriver successfully
         self.get = locator  # using right 'locator'
-        self.url = os.getenv('LOGIN_URL', 'https://www.saucedemo.com/')
+        self.base_url = os.getenv('LOGIN_URL')
+        self.endpoint = str
+        self.url = (f"{self.base_url}{self.endpoint}")
         
     def go_to_login_page(self):
         self.web.get(self.url)
