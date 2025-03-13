@@ -46,11 +46,11 @@ class BasePage:
 
     ## **🟢 Métodos para Interacción con Productos** ##
     def get_product_list(self):
-        """Obtiene la lista de todos los productos en la página."""
+        """Espera a que la lista de productos sea visible antes de devolverla."""
         WebDriverWait(self.driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'inventory_item'))
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "inventory_item"))
         )
-        return self.get.byClasses('inventory_item')
+        return self.get.byClasses("inventory_item")
 
     def get_product_name(self, product_element):
         """Obtiene el nombre de un producto desde su card."""

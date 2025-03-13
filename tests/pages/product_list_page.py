@@ -1,13 +1,11 @@
-from itertools import product
 from tests.pages.base_page import BasePage
-from selenium.webdriver.remote.webelement import WebElement
 from dotenv import load_dotenv
 
 load_dotenv()
 class ProductListPage(BasePage):
     """POM to product list page."""
     
-    def __init__(self, driver, locator, product: WebElement):
+    def __init__(self, driver, locator):
         super().__init__(driver, locator)
         self.endpoint = "/inventory.html"
         
