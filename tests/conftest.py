@@ -1,33 +1,19 @@
 import os
 import pytest
 from selenium import webdriver
-from selenium.webdriver.remote.webdriver import WebDriver
-from typing import Tuple, Dict
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.edge.service import Service as EdgeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from selenium.webdriver.chrome.options import Options
-from tests.utils.asserts import Expect
 from tests.utils.locators import Locators
 from tests.pages.login_page import LoginPage
+from tests.utils.asserts import Expect
+from typing import Tuple, Dict
 
-# Alias para tipo de datos utilizando pruebas
-Test = Tuple[WebDriver, Locators]
+Test = Tuple[webdriver.Chrome, Locators]
 
 def pytest_addoption(parser: pytest.Parser):
-    parser.addoption(
-        "--browser", action="store", default="chrome",
-        help="Browser to use: chrome, edge, firefox",
-        choices=("chrome", "edge", "firefox"),
-    )
-    parser.addoption(
-        "--headless", action="store", default="false",
-        help="Test execution in headless: true or false",
-        choices=("true", "false"),
-    )
+    parser.addoption("--browser", action="store", default="chrome", choices=("chrome",))
+    parser.addoption("--headless", action="store", default="false", choices=("true", "false"))
 
 @pytest.fixture
 def browser(request: pytest.FixtureRequest):
@@ -38,13 +24,14 @@ def headless(request: pytest.FixtureRequest):
     return request.config.getoption("--headless")
 
 @pytest.fixture
-def setWebDriver(headless: str, browser: str):
-    """Configura y devuelve el WebDriver según el navegador especificado."""
+def setWebDriver(headless: str):
+    """
+    Configura y devuelve el WebDriver de Chrome con opciones optimizadas para CI/CD.
+    """
     run = headless.lower() == "true"
-
     chrome_options = Options()
 
-    # 🚀 Opciones para mejorar la estabilidad en CI/CD
+    # 🚀 Opciones para mejorar la estabilidad en GitHub Actions
     chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument("--allow-insecure-localhost")
     chrome_options.add_argument("--allow-running-insecure-content")
@@ -53,50 +40,38 @@ def setWebDriver(headless: str, browser: str):
     chrome_options.add_argument("--disable-popup-blocking")
     chrome_options.add_argument("--log-level=3")
 
-    # 🔹 Evita bloqueos por inactividad en GitHub Actions
+    # 🔹 Evita bloqueos en GitHub Actions
     chrome_options.add_argument("--disable-background-timer-throttling")
     chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 
-    # 🔹 Modo incógnito en vez de `--user-data-dir`
-    chrome_options.add_argument("--incognito")
+    # 🔹 🔥 **Corrección: Eliminamos --user-data-dir**
+    # chrome_options.add_argument(f"--user-data-dir=/tmp/chrome-user-data-{os.getpid()}")  <-- Eliminado
 
-    # 🔹 Modo Headless en entornos CI/CD
+    # 🔹 🔥 **Corrección: Forzar nuevo modo Headless en CI/CD**
     if run:
-        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless=new")
 
-    # 🔹 🔥 **Solución para GitHub Actions**
-    chrome_options.add_argument("--no-sandbox")
+    # 🔹 🔥 **Corrección: Agregar opciones para evitar fallos en GitHub Actions**
     chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Previene errores en memoria compartida
     chrome_options.add_argument("--disable-software-rasterizer")  # Evita fallos gráficos
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Previene errores en memoria
-    chrome_options.add_argument("--remote-debugging-port=9222")  # Evita bloqueos de DevTools
-    chrome_options.add_argument("--guest")  # Ejecuta Chrome sin usuario previo
+    chrome_options.add_argument("--remote-debugging-port=9222")  # Previene bloqueos de DevTools
 
-    # 🚀 Configuración del Driver según el navegador
-    if browser == "chrome":
-        service = ChromeService(ChromeDriverManager().install())
-        return webdriver.Chrome(service=service, options=chrome_options)
-
-    if browser == "firefox":
-        service = FirefoxService(GeckoDriverManager().install())
-        return webdriver.Firefox(service=service)
-
-    if browser == "edge":
-        service = EdgeService(EdgeChromiumDriverManager().install())
-        return webdriver.Edge(service=service)
-
-    raise ValueError(f'Browser "{browser}" not supported.')
+    # 🚀 Inicializar Chrome WebDriver
+    service = ChromeService(ChromeDriverManager().install())
+    return webdriver.Chrome(service=service, options=chrome_options)
 
 @pytest.fixture
-def web(setWebDriver: WebDriver):
+def web(setWebDriver: webdriver.Chrome):
     return setWebDriver
 
 @pytest.fixture
-def get(web: WebDriver):
+def get(web: webdriver.Chrome):
     return Locators(web)
 
 @pytest.fixture
-def setup(setWebDriver: WebDriver):
+def setup(setWebDriver: webdriver.Chrome):
     web = setWebDriver
     get = Locators(web)
 
@@ -109,7 +84,7 @@ def setup(setWebDriver: WebDriver):
     web.quit()
 
 @pytest.fixture
-def beforeEach(setWebDriver: WebDriver):
+def beforeEach(setWebDriver: webdriver.Chrome):
     web = setWebDriver
     get = Locators(web)
     web.implicitly_wait(10)
@@ -131,7 +106,7 @@ def validUser() -> Dict[str, str]:
     return {"username": username, "password": password}
 
 @pytest.fixture
-def driver(setWebDriver: WebDriver):
+def driver(setWebDriver: webdriver.Chrome):
     """Devuelve el WebDriver configurado y lo cierra después de la ejecución."""
     web_driver = setWebDriver
     yield web_driver
