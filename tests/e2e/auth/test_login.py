@@ -28,3 +28,5 @@ class TestLogin:
         # Validamos que el nombre de usuario sea visible
         user_menu = web.find_element("css selector", ".bm-burger-button")
         assert user_menu.is_displayed()
+if __name__ == "__main__":
+    pytest.main()

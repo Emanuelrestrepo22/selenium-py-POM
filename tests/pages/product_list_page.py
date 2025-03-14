@@ -5,6 +5,9 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from tests.utils.locators import Locators
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 # Cargar variables de entorno
 load_dotenv()
@@ -22,7 +25,7 @@ class ProductListPage:
     ## **🟢 Métodos para Navegación en la Web** ##
     def go_to_product_list(self):
         """Navega a la página de lista de productos."""
-        self.driver.get(self.url)
+        self.driver.get(f"{self.base_url}{self.endpoint}")
     
     ## **🟢 Métodos para Interacción con el Carrito** ##
     def open_cart(self):
