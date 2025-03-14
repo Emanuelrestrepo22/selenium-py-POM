@@ -9,31 +9,62 @@ class TestAddToCart:
 
     def test_add_products_to_cart_and_validate_cart_counter(self, loginSuccessful):
         """
-        Verifica que al agregar productos al carrito, el contador se actualiza correctamente.
+        Verifica que al agregar 5 productos al carrito, el contador se actualiza correctamente.
         """
         web, get = loginSuccessful
 
-        # Instanciamos el objeto de la página ProductListPage
-        product_list_page = ProductListPage(web, get)
-
         # Paso 1: Navegar a la página de productos
+        product_list_page = ProductListPage(web, get)
         product_list_page.go_to_product_list()
 
-        # Paso 2: Esperar que la lista de productos cargue
+        # Paso 2: Agregar hasta 5 productos al carrito
         products = product_list_page.get_product_list()
-        num_products_to_add = min(3, len(products))  # Agregar máximo 3 productos
+        num_products_to_add = min(5, len(products))
 
-        # Paso 3: Agregar productos al carrito y verificar que fueron agregados correctamente
         for product_element in products[:num_products_to_add]:
             product_name = product_list_page.get_product_name(product_element)
-            added_successfully = product_list_page.add_product_to_cart(product_name)
-            assert added_successfully, f"No se pudo agregar el producto '{product_name}' al carrito."
+            assert product_list_page.add_product_to_cart(product_name), (
+                f"Fallo al agregar '{product_name}' al carrito."
+            )
 
-        # Paso 4: Obtener y validar el contador del carrito
+        # Paso 3: Obtener y validar el contador del carrito
         cart_count = product_list_page.get_cart_count()
-        assert int(cart_count) == num_products_to_add, (
-            f"Se esperaba {num_products_to_add} productos en el carrito, pero se encontraron {cart_count}"
+        Expect(cart_count).toBeEqual(num_products_to_add)
+
+        print(f" {num_products_to_add} productos añadidos correctamente. El carrito muestra: {cart_count}")
+
+    def test_remove_products_from_cart_and_validate_cart_counter(self, loginSuccessful):
+        """
+        Verifica que al remover un producto del carrito, el contador se actualiza correctamente.
+        """
+        web, get = loginSuccessful
+
+        # Paso 1: Navegar a la página de productos
+        product_list_page = ProductListPage(web, get)
+        product_list_page.go_to_product_list()
+
+        # Paso 2: Agregar 5 productos al carrito primero
+        products = product_list_page.get_product_list()
+        num_products_to_add = min(5, len(products))
+
+        for product_element in products[:num_products_to_add]:
+            product_name = product_list_page.get_product_name(product_element)
+            product_list_page.add_product_to_cart(product_name)
+
+        # Paso 3: Remover el primer producto del carrito
+        assert product_list_page.remove_first_product_from_cart(), (
+            "No se pudo remover ningún producto del carrito."
         )
 
-        print(f" {num_products_to_add} productos añadidos al carrito correctamente. El badge muestra: {cart_count}")
+        # Paso 3: Verificar que el carrito ahora tenga 4 productos (ya que se removió 1)
+        cart_count = product_list_page.get_cart_count()
+        expected_count_after_remove = num_products_to_add - 1
+
+        expect = Expect(cart_count)
+        expect.toBeEqual(expected_count_after_remove)
+
+        print(f" Se removió 1 producto, quedando {cart_count} en el badge del carrito.")
+        
+if __name__ == "__main__":
+    pytest.main()
 
