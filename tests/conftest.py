@@ -7,6 +7,7 @@ from tests.utils.asserts import Expect
 from tests.utils.drivers import Drivers
 from tests.utils.locators import Locators
 from tests.pages.login_page import LoginPage
+from tests.pages.product_list_page import ProductListPage
 
 #alias para tipo de datos utilizando pruebas
 Test = Tuple[WebDriver, Locators]
@@ -111,6 +112,22 @@ def loginSuccessful(beforeEach: Test, validUser: Dict[str, str]):
     expect.toContain("/inventory")
 
     yield (web, get)
+    
+@pytest.fixture
+def cart_with_items(loginSuccessful: Test):
+    """
+    Fixture que realiza login exitoso y añade productos al carrito.
+    Devuelve el driver, los localizadores y los productos añadidos.
+    """
+    web, get = loginSuccessful
+    product_list = ProductListPage(web, get)
+
+    # Cantidad configurable si se quiere ajustar
+    num_products_to_add = 3
+    added_products = product_list.add_n_products_to_cart(num_products_to_add)
+
+    yield web, get, added_products
+
 
 if __name__ == "__main__":
     pytest.main()
