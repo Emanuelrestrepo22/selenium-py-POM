@@ -28,9 +28,10 @@ class ProductListPage:
         self.cart_link_selector = 'shopping-cart-link'
         self.cart_badge_selector = 'shopping-cart-badge'
 
+    ## **🟢 Métodos para Navegación en la Web** ##
     def go_to_product_list(self):
         self.driver.get(self.url)
-
+    ## **🟢 Métodos para Interacción con el Carrito** ##
     def open_cart(self):
         self.get.byDataTest(self.cart_link_selector).click()
 
@@ -40,7 +41,7 @@ class ProductListPage:
             return int(badge.text) if badge else 0
         except:
             return 0
-
+    ## **🟢 Métodos para Interacción con Productos** ##
     def get_product_list(self):
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, self.inventory_item_class))
@@ -51,7 +52,8 @@ class ProductListPage:
         return product_element.find_element(By.CSS_SELECTOR, self.product_name_selector).text
 
     def get_product_price(self, product_element):
-        return product_element.find_element(By.CSS_SELECTOR, self.product_price_selector).text
+        price_cart_item = product_element.find_element(By.CSS_SELECTOR, self.product_price_selector).text
+        return float(price_cart_item.replace('$',''))
 
     def add_product_to_cart(self, product_name):
         products = self.get_product_list()
