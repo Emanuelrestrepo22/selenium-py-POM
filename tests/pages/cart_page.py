@@ -22,7 +22,7 @@ class CartPage(BasePage):
         self.cart_container = '[data-test="cart-list"]'
         self.cart_item = '[data-test="inventory-item"]'
         self.remove_button = '[data-test^="remove-sauce-labs"]'
-        self.checkout_button = '[data-test="checkout"]'
+        self.checkout_button = 'checkout'
         self.continue_shopping_button = '[data-test="continue-shopping"]'
 
         

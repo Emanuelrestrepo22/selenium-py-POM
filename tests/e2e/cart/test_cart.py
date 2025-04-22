@@ -4,59 +4,55 @@ from tests.pages.product_list_page import ProductListPage
 from tests.pages.cart_page import CartPage
 from tests.utils.asserts import Expect
 
+
 @pytest.mark.usefixtures("loginSuccessful")
 class TestCartPage:
 
-    def test_should_match_cart_count_after_adding_and_removing_items(self, loginSuccessful):
+    def test_cart_state_should_be_consistent_before_checkout(self, loginSuccessful):
         web, get = loginSuccessful
 
-        print("🟢 Paso 1: Cargando página de productos...")
+        # Paso 1: Instancia en PLP y agregar productos
         plp = ProductListPage(web, get)
         plp.go_to_product_list()
-
-        print("🟢 Agregando 5 productos al carrito...")
         added_products = plp.add_n_products_to_cart(5)
-        print(f"🧾 Productos agregados: {added_products}")
         assert len(added_products) == 5, "No se agregaron 5 productos al carrito."
 
-        print("🟢 Verificando número en el ícono del carrito...")
+        # Paso 2: Validar número en ícono del carrito
         cart_count_icon = plp.get_cart_count()
-        print(f"🛒 Número en ícono del carrito: {cart_count_icon}")
+        assert cart_count_icon == 5, f"El ícono del carrito muestra {cart_count_icon} en lugar de 5."
 
-        print("🟢 Haciendo clic en el ícono del carrito...")
+        # Paso 3: Redirigir a la página del carrito
         plp.open_cart()
         cartPage = CartPage(web, get)
 
-        print("🟢 Verificando número de productos dentro del carrito...")
+        # Paso 4: Verificar que el número de productos en el contenedor coincide con el ícono
         items_in_cart_page = len(web.find_elements(By.CSS_SELECTOR, cartPage.cart_item))
-        print(f"📦 Productos visibles en cart-list: {items_in_cart_page}")
-
         assert items_in_cart_page == cart_count_icon, (
-            f"El carrito muestra {items_in_cart_page} items, pero el ícono dice {cart_count_icon}."
+            f"El carrito muestra {items_in_cart_page} productos, pero el ícono indica {cart_count_icon}."
         )
 
-        print("🟢 Eliminando 2 productos del carrito...")
-        removed = 0
-        for i in range(2):
-            try:
-                remove_buttons = web.find_elements(By.CSS_SELECTOR, cartPage.remove_button)
-                if remove_buttons:
-                    remove_buttons[0].click()
-                    removed += 1
-                    print(f"✅ Producto eliminado ({removed}/2)")
-            except Exception as e:
-                print(f"⚠️ Error al eliminar producto: {e}")
+        # Paso 5: Eliminar 2 productos
+        for _ in range(2):
+            remove_buttons = web.find_elements(By.CSS_SELECTOR, cartPage.remove_button)
+            assert remove_buttons, "No hay botones para eliminar productos en el carrito."
+            remove_buttons[0].click()
 
-        assert removed == 2, f"Solo se eliminaron {removed} productos."
-
-        print("🟢 Verificando ícono del carrito después de eliminar...")
+        # Paso 6: Validar que el ícono se actualizó correctamente
         updated_cart_count = plp.get_cart_count()
-        updated_cart_items = len(web.find_elements(By.CSS_SELECTOR, cartPage.cart_item))
-        print(f"🛒 Ícono del carrito: {updated_cart_count}")
-        print(f"📦 Productos en página: {updated_cart_items}")
-
-        assert updated_cart_count == updated_cart_items, (
-            f"Ícono muestra {updated_cart_count}, pero el carrito contiene {updated_cart_items} productos."
+        expected_remaining = 3
+        assert updated_cart_count == expected_remaining, (
+            f"Se esperaban {expected_remaining} productos en el ícono, pero se encontró {updated_cart_count}."
         )
 
-        print("✅✅ Test completado exitosamente.")
+        # Paso 7: Validar que el contenedor tenga los mismos productos
+        updated_cart_items = len(web.find_elements(By.CSS_SELECTOR, cartPage.cart_item))
+        assert updated_cart_items == expected_remaining, (
+            f"El contenedor de carrito muestra {updated_cart_items} productos en lugar de {expected_remaining}."
+        )
+
+        # Paso 8: Hacer clic en el botón de Checkout
+        cartPage.go_to_checkout()
+
+        # Paso 9: Validar que estamos en el formulario de información
+        expect = Expect(web.current_url)
+        expect.toContain("checkout-step-one")

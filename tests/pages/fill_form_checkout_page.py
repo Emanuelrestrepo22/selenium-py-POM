@@ -14,7 +14,7 @@ class FillFormCheckout(BasePage):
         super().__init__(driver, locator)
         self.driver = driver
         self.get = locator
-        self.endpoint = '/cart.html'
+        self.endpoint = '/checkout-step-one.html'
         self.url = f"{self.base_url}{self.endpoint}"
         
         # 📝 Selectores del formulario
@@ -24,19 +24,34 @@ class FillFormCheckout(BasePage):
         self.cancel_button = 'cancel'
         self.continue_button = 'continue'
         self.checkout_title = '[data-test="title"]'
-        
-        # 🔤 Faker data (generado una vez al instanciar)
+        self.error_message = '[data-test="error"]'
+
+        # 🔤 Faker data (válido)
         fake = Faker()
-        self.first_name = fake.first_name_female_common()
-        self.last_name = fake.last_name_common()
-        self.postal_code = fake.postal_code()
-        
+        self.first_name = fake.first_name()
+        self.last_name = fake.last_name()
+        self.postal_code = fake.postcode()
+
     # ====================
     # 📝 Formulario de Checkout
     # ====================
     def fill_form(self):
-        """Completa el formulario de usuario usando Faker."""
+        """Completa el formulario con datos válidos (Faker)."""
         self.get.byDataTest(self.first_name_input).send_keys(self.first_name)
         self.get.byDataTest(self.last_name_input).send_keys(self.last_name)
         self.get.byDataTest(self.postal_code_input).send_keys(self.postal_code)
         self.get.byDataTest(self.continue_button).click()
+
+    def submit_with_fields(self, first_name: str = "", last_name: str = "", postal_code: str = ""):
+        """Envía el formulario con valores personalizados (para pruebas negativas)."""
+        if first_name:
+            self.get.byDataTest(self.first_name_input).send_keys(first_name)
+        if last_name:
+            self.get.byDataTest(self.last_name_input).send_keys(last_name)
+        if postal_code:
+            self.get.byDataTest(self.postal_code_input).send_keys(postal_code)
+        self.get.byDataTest(self.continue_button).click()
+
+    def get_error_message(self) -> str:
+        """Devuelve el mensaje de error visible en el formulario."""
+        return self.get.byCss(self.error_message).text
