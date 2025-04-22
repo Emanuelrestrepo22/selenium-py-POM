@@ -8,7 +8,7 @@ from tests.pages.base_page import BasePage
 # Load environment variables
 load_dotenv()
 
-class CheckoutCartPage(BasePage):
+class CartPage(BasePage):
     """Page Object Model: Checkout Cart Page - Flujo de Checkout completo."""
 
     def __init__(self, driver: WebDriver, locator: Locators):
