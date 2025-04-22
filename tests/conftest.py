@@ -123,7 +123,7 @@ def cart_with_items(loginSuccessful: Test):
     product_list = ProductListPage(web, get)
 
     # Cantidad configurable si se quiere ajustar
-    num_products_to_add = 3
+    num_products_to_add = 5
     added_products = product_list.add_n_products_to_cart(num_products_to_add)
 
     yield web, get, added_products
