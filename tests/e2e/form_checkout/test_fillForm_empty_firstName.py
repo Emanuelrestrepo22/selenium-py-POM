@@ -1,3 +1,5 @@
+# tests/e2e/cart/test_fill_form_checkout.py
+
 import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,28 +18,18 @@ class TestFillFormCheckout:
         web, get = loginSuccessful
         fake = Faker()
 
-        # Paso 1: Agregar productos al carrito desde PLP
-        print("🟢 Paso 1: Agregando productos desde Product List Page...")
         plp = ProductListPage(web, get)
         plp.go_to_product_list()
         added = plp.add_n_products_to_cart(3)
-        assert added, "❌ No se agregaron productos."
+        assert added, "No se agregaron productos."
 
-        # Paso 2: Ir al carrito y hacer click en Checkout
-        print("🛒 Paso 2: Redirigiendo al carrito y haciendo click en Checkout...")
         plp.open_cart()
         cart_page = CartPage(web, get)
         cart_page.go_to_checkout()
 
-        # Paso 3: Validar que estamos en /checkout-step-one.html
-        print("🟢 Paso 3: Validando que estamos en la página de Checkout - Fill Form")
-        print("🌐 URL actual:", web.current_url)
-        assert "checkout-step-one" in web.current_url, "❌ No estamos en la página de Checkout Form"
+        assert "checkout-step-one" in web.current_url, "No estamos en la página de Checkout Form"
 
-        # Paso 4: Completar solo campos Last Name y Postal Code
-        print("📝 Paso 4: Completando solo Last Name y Postal Code...")
         form = FillFormCheckout(web, get)
-
         WebDriverWait(web, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="lastName"]'))
         )
@@ -46,13 +38,8 @@ class TestFillFormCheckout:
         get.byDataTest(form.postal_code_input).send_keys(fake.postalcode())
         get.byDataTest(form.continue_button).click()
 
-        # Paso 5: Validar error
-        print("🚨 Paso 5: Validando mensaje de error por First Name vacío...")
         error_container = get.byCss('.error-message-container')
-        assert "error" in error_container.get_attribute("class"), "❌ No se muestra el contenedor de error."
+        assert "error" in error_container.get_attribute("class"), "No se muestra el contenedor de error."
 
         error_text = error_container.text.strip()
-        print(f"🧪 Texto del error: {error_text}")
-        assert "First Name is required" in error_text, "❌ El mensaje no corresponde al error esperado."
-
-        print("✅ Test finalizado exitosamente.")
+        assert "First Name is required" in error_text, "El mensaje no corresponde al error esperado."
