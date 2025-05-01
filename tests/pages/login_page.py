@@ -1,3 +1,5 @@
+# The `LoginPage` class represents login functionality using Page Object Model (POM) in Python with
+# Selenium.
 import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait

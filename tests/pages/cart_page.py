@@ -20,7 +20,6 @@ class CartPage(BasePage):
 
         # 🛒 Selectores del carrito
         self.cart_container = '[data-test="cart-list"]'
-        self.cart_item = '[data-test="inventory-item"]'
         self.remove_button = '[data-test^="remove-sauce-labs"]'
         self.checkout_button = 'checkout'
         self.continue_shopping_button = '[data-test="continue-shopping"]'
@@ -68,9 +67,9 @@ class CartPage(BasePage):
                 price = float(price_text.replace('$', '').strip())
                 total += price
             except Exception as e:
-                print(f"⚠️ Error al leer precio: {e}")
+                print(f"Error al leer precio: {e}")
 
-        print(f"💰 Total en carrito: ${total:.2f}")
+        print(f"Total en carrito: ${total:.2f}")
         return total
 
     def get_totals(self):

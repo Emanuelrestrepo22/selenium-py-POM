@@ -19,7 +19,7 @@ class BasePage:
         self.base_url = os.getenv('BASE_URL', "https://www.saucedemo.com")
 
         # Selectores compartidos
-        self.inventory_item_class = 'inventory_item'
+        self.cart_item = 'inventory_item'
         self.product_name_selector = '[data-test="inventory-item-name"]'
         self.product_price_selector = '[data-test="inventory-item-price"]'
         self.add_to_cart_selector = '[data-test^="add-to-cart"]'
@@ -39,9 +39,9 @@ class BasePage:
 
     def get_product_list(self):
         WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, self.inventory_item_class))
+            EC.presence_of_element_located((By.CLASS_NAME, self.cart_item))
         )
-        return self.get.byClasses(self.inventory_item_class)
+        return self.get.byClasses(self.cart_item)
 
     def get_product_name(self, product_element):
         return product_element.find_element(By.CSS_SELECTOR, self.product_name_selector).text

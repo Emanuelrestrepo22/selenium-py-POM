@@ -1,13 +1,21 @@
+from faker import Faker
 import pytest
 import os
 from selenium.webdriver.remote.webdriver import WebDriver
 from typing import Tuple, Dict, Optional
+from tests.pages.cart_page import CartPage
+from tests.pages.fill_form_checkout_page import FillFormCheckout
 from tests.testbase import *
 from tests.utils.asserts import Expect
 from tests.utils.drivers import Drivers
 from tests.utils.locators import Locators
 from tests.pages.login_page import LoginPage
 from tests.pages.product_list_page import ProductListPage
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+
+
 
 #alias para tipo de datos utilizando pruebas
 Test = Tuple[WebDriver, Locators]
@@ -127,7 +135,36 @@ def cart_with_items(loginSuccessful: Test):
     added_products = product_list.add_n_products_to_cart(num_products_to_add)
 
     yield web, get, added_products
+@pytest.fixture
+def overview_ready(cart_with_items):
+    """
+    Usuario logueado, carrito listo y formulario completado, parado en checkout overview (/checkout-step-two.html).
+    """
+    web, get, added_products = cart_with_items
+    fake = Faker()
 
+    # Ir al carrito y hacer click en Checkout
+    product_list = ProductListPage(web, get)
+    product_list.open_cart()
+
+    cart_page = CartPage(web, get)
+    cart_page.go_to_checkout()
+
+    # Llenar formulario de checkout
+    form_page = FillFormCheckout(web, get)
+    WebDriverWait(web, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="firstName"]'))
+    )
+    get.byDataTest(form_page.first_name_input).send_keys(fake.first_name())
+    get.byDataTest(form_page.last_name_input).send_keys(fake.last_name())
+    get.byDataTest(form_page.postal_code_input).send_keys(fake.postcode())
+    get.byDataTest(form_page.continue_button).click()
+
+    # Validar llegada a checkout overview
+    WebDriverWait(web, 10).until(EC.url_contains("checkout-step-two"))
+    assert "checkout-step-two" in web.current_url, "No se redirigió correctamente a Checkout Overview."
+
+    yield web, get, added_products
 
 if __name__ == "__main__":
     pytest.main()
