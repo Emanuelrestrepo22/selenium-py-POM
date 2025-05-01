@@ -4,10 +4,10 @@ run-name: ${{ github.actor }} 👨🏻‍🔬 ran SanityTest in ${{ github.ref_n
 on:
   push:
     branches:
-      - '**'
+      - main
   pull_request:
     branches:
-      - '**'
+      - main
   workflow_dispatch:
 
 jobs:
