@@ -20,6 +20,7 @@ class CartPage(BasePage):
 
         # 🛒 Selectores del carrito
         self.cart_container = '[data-test="cart-list"]'
+        self.cart_item = '[data-test="inventory-item"]'
         self.remove_button = '[data-test^="remove-sauce-labs"]'
         self.checkout_button = 'checkout'
         self.continue_shopping_button = '[data-test="continue-shopping"]'
@@ -59,7 +60,7 @@ class CartPage(BasePage):
     def get_all_cart_prices(self):
         """Suma todos los precios visibles en el carrito."""
         total = 0.0
-        items = self.driver.find_elements(By.CSS_SELECTOR, self.cart_item)
+        items = self.driver.find_elements(By.CSS_SELECTOR, self.inventory_item_class)
 
         for item in items:
             try:
