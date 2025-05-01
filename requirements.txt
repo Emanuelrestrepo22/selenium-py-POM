@@ -21,3 +21,6 @@ loguru
 
 # Herramienta para esperar elementos dinámicos en Selenium (opcional)
 selenium-wire
+
+# para crear variables random en nuestros test
+faker
