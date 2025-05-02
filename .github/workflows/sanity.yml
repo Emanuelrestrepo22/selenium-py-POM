@@ -1,5 +1,5 @@
 name: 🤖 CI Run SanityTest Execution 🧪
-run-name: ${{ github.actor }} 👨🏻‍🔬 ran SanityTest in ${{ github.ref_name }}
+run-name: ${{ github.actor }}  ran SanityTest in ${{ github.ref_name }}
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
           SWL_PASSWORD: ${{ vars.SWL_PASSWORD }}
         run: |
           if [[ -z "$SWL_USERNAME" || -z "$SWL_PASSWORD" ]]; then
-            echo "❌ ERROR: Variables de entorno no definidas en GitHub."
+            echo "ERROR: Variables de entorno no definidas en GitHub."
             exit 1
           fi
           pytest tests/ --disable-warnings
