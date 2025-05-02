@@ -14,6 +14,9 @@ from tests.pages.product_list_page import ProductListPage
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+import pytest
+import requests
+from tests.utils.browser_helper import set_session_username, set_cart_contents
 
 
 
@@ -165,6 +168,29 @@ def overview_ready(cart_with_items):
     assert "checkout-step-two" in web.current_url, "No se redirigió correctamente a Checkout Overview."
 
     yield web, get, added_products
+
+
+
+
+@pytest.fixture
+def cart_with_local_storage(setWebDriver: WebDriver):
+    web = setWebDriver
+    get = Locators(web)
+
+    web.get("https://www.saucedemo.com/")
+
+    # Setear cookie de sesión
+    set_session_username(web, "standard_user")
+
+    # Setear productos en carrito (IDs como string)
+    product_ids = ["4", "1", "0"]  # IDs según la aplicación (ajustar si es necesario)
+    set_cart_contents(web, product_ids)
+
+    web.refresh()
+
+    yield web, get, product_ids
+
+    web.quit()
 
 if __name__ == "__main__":
     pytest.main()

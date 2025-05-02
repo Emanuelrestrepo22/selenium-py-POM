@@ -24,3 +24,6 @@ selenium-wire
 
 # para crear variables random en nuestros test
 faker
+
+
+requests
